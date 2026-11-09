@@ -178,7 +178,9 @@ dialog::backdrop{background:rgba(8,12,20,.6)}
     <h2>Technical Skills</h2>
     <dl class="ledger">
       <dt>Backend</dt><dd>Python, FastAPI, REST APIs, SQL, SQLAlchemy, Pydantic, JWT, RBAC, Git/GitHub, Streamlit</dd>
-      <dt>DevOps &amp; MLOps</dt><dd>GitHub Actions, CI/CD pipelines, Docker, Docker Compose, LangSmith (tracing, evaluation datasets, regression testing), database sharding, read replicas, environment and secrets management</dd>
+      <dt>DevOps &amp; MLOps</dt><dd>GitHub Actions, CI/CD pipelines, Docker, Docker Compose, LangSmith (tracing, evaluation datasets, regression testing), environment and secrets management</dd>
+      <dt>Backend Concepts</dt><dd>Database sharding, read replicas, connection pooling, load balancing, rate limiting, pagination, optimistic and pessimistic locking, event-driven architecture</dd>
+      <dt>Cloud</dt><dd>AWS EC2, AWS S3</dd>
       <dt>GenAI &amp; LLM</dt><dd>RAG, prompt engineering, embeddings, semantic search, LangChain, LangGraph, MCP, Hugging Face, Ollama, vLLM</dd>
       <dt>Agents &amp; Orchestration</dt><dd>Multi-agent workflows, harness engineering, tool calling, conditional routing, persistent workflow state, agent memory (semantic, episodic, procedural, short-term), human-in-the-loop, retries, failure handling</dd>
       <dt>Retrieval Engineering</dt><dd>Chunking strategies, hybrid vector databases, multilingual RAG, re-ranking, ANN search, graph databases, structured output validation</dd>
@@ -249,6 +251,8 @@ dialog::backdrop{background:rgba(8,12,20,.6)}
         <li><b>Safer extraction</b><span>Extraction and validation split into independent passes with Guardrails AI schema checks and custom injection-pattern validation.</span></li>
         <li><b>Local inference</b><span>Ollama and vLLM for on-premise models, orchestrated with LangChain and LangGraph.</span></li>
         <li><b>Backend services</b><span>FastAPI on PostgreSQL and Redis for staging, application and pipeline data.</span></li>
+        <li><b>Production-ready APIs</b><span>SQLAlchemy connection pooling, pagination on case-search and listing endpoints, rate limiting on API and LLM calls, and load balancing across backend workers.</span></li>
+        <li><b>Event-driven processing</b><span>Document uploads trigger OCR, extraction and validation jobs through a Redis-backed queue, so each stage scales and retries on its own.</span></li>
         <li><b>CI/CD</b><span>Lint, tests and schema checks on every PR, then Docker image builds and deploys; consistent dev, staging and production via Docker Compose.</span></li>
         <li><b>Evaluation</b><span>LangSmith eval datasets as regression checks before prompt or model releases; relevance, precision, recall and correctness metrics.</span></li>
       </ul>
@@ -335,7 +339,7 @@ dialog::backdrop{background:rgba(8,12,20,.6)}
       <dl class="ps">
         <dt>Problem</dt><dd>Store staff need fast answers about stock and sales, but letting an AI query the database risks exposing data a role should not see.</dd>
         <dt>Solution</dt><dd>A role-based retail backend plus a RAG assistant that writes SQL from plain-English questions, gated by the caller's role permissions.</dd>
-        <dt>Tech stack</dt><dd class="chips"><span class="chip">Python</span><span class="chip">FastAPI</span><span class="chip">PostgreSQL</span><span class="chip">SQLAlchemy</span><span class="chip">Redis</span><span class="chip">JWT</span><span class="chip">RBAC</span><span class="chip">LangChain</span><span class="chip">Docker</span><span class="chip">GitHub Actions</span></dd>
+        <dt>Tech stack</dt><dd class="chips"><span class="chip">Python</span><span class="chip">FastAPI</span><span class="chip">PostgreSQL</span><span class="chip">SQLAlchemy</span><span class="chip">Redis</span><span class="chip">JWT</span><span class="chip">RBAC</span><span class="chip">LangChain</span><span class="chip">Docker</span><span class="chip">GitHub Actions</span><span class="chip">AWS EC2</span><span class="chip">AWS S3</span></dd>
       </dl>
       <button class="btn more" type="button" aria-expanded="false" aria-controls="d3" id="m3">View details <span class="arr" aria-hidden="true">▾</span></button>
       <div class="details" id="d3" hidden>
@@ -347,7 +351,8 @@ dialog::backdrop{background:rgba(8,12,20,.6)}
           <li><b>Ask the assistant</b> a plain-English question, such as which products are low on stock.</li>
           <li><b>RAG and SQL.</b> LangChain retrieves schema and store context; the LLM writes the query.</li>
           <li><b>Permission gate.</b> The query is checked against the caller's role before it runs.</li>
-          <li><b>Ship.</b> GitHub Actions runs tests and builds the Docker image.</li>
+          <li><b>Safe concurrent sales.</b> Optimistic locking on stock updates and pessimistic row locks during checkout stop two sales from taking the same last item.</li>
+          <li><b>Ship.</b> GitHub Actions runs tests and builds the Docker image, deployed on AWS EC2 with product assets in S3.</li>
         </ol>
       </div>
     </article>
