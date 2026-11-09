@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sathiya Varshini</title>
+<meta name="description" content="Sathiya Varshini — Backend GenAI Developer building document intelligence, RAG and multi-agent systems in Python and FastAPI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one résumé-style first screen (summary + skills ledger) with two doors — Work Experience and Self Projects — that open as full popups. */
+:root{
+  --paper:#F2F4F6; --surface:#FFFFFF; --ink:#16202A; --muted:#5A6672; --rule:#D5DBE1;
+  --cobalt:#2340B8; --cobalt-soft:#E3E8FA; --on-cobalt:#FFFFFF; --mark:#FCE79A;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0F151B; --surface:#161F27; --ink:#E6ECF1; --muted:#93A0AC; --rule:#27323C;
+  --cobalt:#8FA6FF; --cobalt-soft:#1C2648; --on-cobalt:#0F151B; --mark:#5A4A12; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#0F151B; --surface:#161F27; --ink:#E6ECF1; --muted:#93A0AC; --rule:#27323C;
+  --cobalt:#8FA6FF; --cobalt-soft:#1C2648; --on-cobalt:#0F151B; --mark:#5A4A12; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+html.locked{overflow:hidden}
+.wrap{max-width:980px;margin:0 auto}
+a{color:var(--cobalt);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--cobalt);outline-offset:3px;border-radius:6px}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+.label{font:500 12px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+
+/* ---------- first screen ---------- */
+.top{padding-block:48px 28px;display:grid;gap:14px}
+.top h1{font-size:clamp(38px,6vw,60px);line-height:1.02;font-weight:800}
+.role{font:500 clamp(16px,2vw,19px)/1.4 var(--display);color:var(--cobalt)}
+.links{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14.5px;color:var(--muted)}
+.links span{user-select:all}
+
+.doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.post{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px 20px;display:grid;gap:10px}
+.post p{margin:0;color:var(--muted);font-size:15px}
+.post-tag{font:500 11.5px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--cobalt)}
+.models{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.models div{background:var(--cobalt-soft);border-radius:8px;padding:8px 10px;min-width:0}
+.models b{display:block;font:700 17px var(--display);color:var(--cobalt);font-variant-numeric:tabular-nums}
+.models span{font-size:12.5px;color:var(--muted)}
+.models .best{outline:2px solid var(--cobalt)}
+.door{display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;padding:18px 20px;border-radius:10px;
+  border:1px solid var(--rule);background:var(--surface);color:var(--ink);cursor:pointer;font:inherit;transition:border-color .15s, transform .15s}
+.door:hover{border-color:var(--cobalt);transform:translateY(-1px)}
+.door.primary{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
+.door b{display:block;font:700 19px/1.2 var(--display)}
+.door small{display:block;font-size:13.5px;opacity:.8;margin-top:3px}
+.door .go{font:500 20px var(--mono);flex:none}
+
+.block{padding-block:26px;border-top:1px solid var(--rule)}
+.block h2{font:700 13px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:14px}
+.summary{font-size:17px;max-width:72ch;margin:0}
+.ledger{display:grid;grid-template-columns:210px 1fr;margin:0}
+.ledger dt,.ledger dd{padding-block:11px;border-bottom:1px solid var(--rule);margin:0;min-width:0}
+.ledger dt{font-weight:600;padding-right:16px}
+.ledger dd{color:var(--muted);font-size:15px}
+.ledger tr:last-child{border:0}
+.edu{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px}
+footer{padding-block:24px 36px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;color:var(--muted);font-size:13.5px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:6px;font:500 14px var(--body);border:1px solid var(--rule);color:var(--ink);background:var(--surface);cursor:pointer;text-decoration:none}
+.btn:hover{border-color:var(--cobalt)}
+
+/* ---------- popups ---------- */
+dialog{width:min(920px,calc(100% - 24px));max-height:calc(100% - 32px);padding:0;border:1px solid var(--rule);border-radius:14px;background:var(--paper);color:var(--ink);overflow:hidden}
+dialog[open]{display:flex;flex-direction:column;animation:pop .22s ease-out}
+dialog::backdrop{background:rgba(8,12,20,.6)}
+@keyframes pop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.d-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:20px 24px 16px;border-bottom:1px solid var(--rule);background:var(--surface)}
+.d-head h2{font-size:clamp(22px,3vw,28px);font-weight:700}
+.close{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--rule);background:var(--paper);color:var(--ink);font:500 18px/1 var(--body);cursor:pointer}
+.close:hover{border-color:var(--cobalt)}
+.d-body{overflow-y:auto;padding:22px 24px 28px;display:grid;gap:26px}
+.d-body > *{min-width:0}
+.sub{font:700 13px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:12px}
+
+/* experience: pipeline visualization */
+.pipe{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;counter-reset:s}
+.pipe li{counter-increment:s;background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:10px 12px;position:relative;min-width:0}
+.pipe li::before{content:counter(s,decimal-leading-zero);font:500 11px var(--mono);color:var(--cobalt)}
+.pipe b{display:block;font-weight:600;font-size:15px}
+.pipe small{display:block;color:var(--muted);font-size:12.5px;font-family:var(--mono)}
+.pipe-note{font-size:13px;color:var(--muted);margin-top:8px}
+.layers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+.layers div{border-top:3px solid var(--cobalt);background:var(--cobalt-soft);border-radius:0 0 8px 8px;padding:10px 12px;min-width:0}
+.layers b{display:block;font-size:14px}
+.layers span{font-size:12.5px;color:var(--muted)}
+
+.points{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:14px 26px}
+.points li{padding-left:14px;border-left:2px solid var(--rule);min-width:0}
+.points b{display:block;font-weight:600;font-size:15px}
+.points span{color:var(--muted);font-size:14.5px}
+
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font:500 12.5px var(--mono);padding:4px 10px;border-radius:999px;background:var(--cobalt-soft);color:var(--cobalt)}
+.chip.plain{background:var(--surface);color:var(--ink);border:1px solid var(--rule)}
+.stackgrid{display:grid;grid-template-columns:150px 1fr;gap:10px 16px;align-items:start}
+.stackgrid dt{font-weight:600;font-size:14px;padding-top:3px}
+.stackgrid dd{margin:0;min-width:0}
+
+/* projects */
+.proj{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px 20px;display:grid;gap:12px}
+.proj-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 16px}
+.proj h3{font-size:19px;font-weight:700}
+.ps{display:grid;grid-template-columns:110px 1fr;gap:6px 14px;margin:0}
+.ps dt{font:500 12px/1.9 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.ps dd{margin:0;min-width:0;font-size:15px}
+.more{justify-self:start}
+.more[aria-expanded="true"] .arr{transform:rotate(180deg)}
+.arr{display:inline-block;transition:transform .2s}
+.details{border-top:1px dashed var(--rule);padding-top:14px;display:grid;gap:14px}
+.flow{list-style:none;margin:0;padding:0;counter-reset:f;border-left:2px solid var(--cobalt-soft);margin-left:10px}
+.flow li{counter-increment:f;position:relative;padding:0 0 12px 22px;font-size:14.5px;color:var(--muted)}
+.flow li:last-child{padding-bottom:0}
+.flow li::before{content:counter(f);position:absolute;left:-11px;top:1px;width:20px;height:20px;border-radius:50%;background:var(--surface);border:2px solid var(--cobalt);color:var(--cobalt);font:500 11px/16px var(--mono);text-align:center}
+.flow b{color:var(--ink);font-weight:600}
+.stat{font:700 16px var(--display);color:var(--cobalt);margin-right:16px}
+
+@media (max-width:760px){
+  .doors,.points,.layers{grid-template-columns:1fr}
+  .models{grid-template-columns:1fr 1fr}
+  .ledger,.stackgrid{grid-template-columns:1fr}
+  .ledger dt{border-bottom:0;padding-bottom:0}
+  .ledger dd{padding-top:2px}
+  .stackgrid dd{margin-bottom:6px}
+  .pipe{grid-template-columns:1fr 1fr}
+  .ps{grid-template-columns:1fr;gap:2px}
+  .ps dd{margin-bottom:8px}
+  dialog{width:100%;max-width:100%;max-height:100%;height:100%;border-radius:0;border:0}
+  .d-head{padding-top:max(16px,env(safe-area-inset-top,0px))}
+  .d-head,.d-body{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+}
+@media (prefers-reduced-motion:reduce){ dialog[open]{animation:none} .door{transition:none} }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="label">Chennai, Tamil Nadu, India</div>
+    <h1>Sathiya Varshini</h1>
+    <div class="role">Backend GenAI Developer · AI/ML Engineer · Python Developer</div>
+    <div class="links">
+      <span>sathiyavarshiniofficial@gmail.com</span>
+      <a href="https://github.com/Sathiyavarshini" target="_blank" rel="noopener">github.com/Sathiyavarshini</a>
+      <a href="https://linkedin.com/in/sathiya-varshini" target="_blank" rel="noopener">linkedin.com/in/sathiya-varshini</a>
+    </div>
+    <div class="doors">
+      <button class="door primary" type="button" data-open="experience" id="open-experience">
+        <span><b>Work Experience</b><small>HectaData · Sep 2024 – Present</small></span><span class="go" aria-hidden="true">→</span>
+      </button>
+      <button class="door" type="button" data-open="projects" id="open-projects">
+        <span><b>Self Projects</b><small>5 projects · agents, RAG, MCP, ML</small></span><span class="go" aria-hidden="true">→</span>
+      </button>
+      <button class="door" type="button" data-open="posts" id="open-posts">
+        <span><b>LinkedIn Posts</b><small>Hackathon, DRDO internship, events</small></span><span class="go" aria-hidden="true">→</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="block">
+    <h2>Summary</h2>
+    <p class="summary">AI developer with two years building backend systems that turn documents into structured, searchable data. Works in Python and FastAPI on a legal AI platform at HectaData, covering OCR, LLM extraction, RAG and vector search, alongside multi-agent and MCP tools built independently. Focused on making LLM output reliable: schema-validated, grounded in real sources, traced and evaluated in production, and safe to run in bulk.</p>
+  </section>
+
+  <section class="block">
+    <h2>Technical Skills</h2>
+    <dl class="ledger">
+      <dt>Backend</dt><dd>Python, FastAPI, REST APIs, SQL, SQLAlchemy, Pydantic, JWT, RBAC, Git/GitHub, Streamlit</dd>
+      <dt>DevOps &amp; MLOps</dt><dd>GitHub Actions, CI/CD pipelines, Docker, Docker Compose, LangSmith (tracing, evaluation datasets, regression testing), database sharding, read replicas, environment and secrets management</dd>
+      <dt>GenAI &amp; LLM</dt><dd>RAG, prompt engineering, embeddings, semantic search, LangChain, LangGraph, MCP, Hugging Face, Ollama, vLLM</dd>
+      <dt>Agents &amp; Orchestration</dt><dd>Multi-agent workflows, harness engineering, tool calling, conditional routing, persistent workflow state, agent memory (semantic, episodic, procedural, short-term), human-in-the-loop, retries, failure handling</dd>
+      <dt>Retrieval Engineering</dt><dd>Chunking strategies, hybrid vector databases, multilingual RAG, re-ranking, ANN search, graph databases, structured output validation</dd>
+      <dt>LLM Efficiency</dt><dd>Temperature, top-k, top-p, presence penalty, streaming, time to first token, tokens per second, latency and token/context optimization, caching; LoRA, QLoRA, PEFT, adapters, quantization</dd>
+      <dt>Evaluation &amp; Safety</dt><dd>Correctness, relevancy, precision, recall, groundedness, faithfulness, completeness, hit rate, MRR; hallucination detection, guardrails, prompt-injection testing</dd>
+      <dt>Data &amp; Storage</dt><dd>PostgreSQL, MongoDB, Supabase, Redis, Qdrant, DBeaver</dd>
+      <dt>ML &amp; NLP</dt><dd>scikit-learn, XGBoost, CatBoost, PyTorch, TensorFlow, Keras, Pandas, NumPy, feature engineering</dd>
+      <dt>Document &amp; OCR</dt><dd>OpenCV, PyMuPDF, Tesseract, PaddleOCR, python-docx, Lingua</dd>
+    </dl>
+  </section>
+
+  <section class="block">
+    <h2>Education</h2>
+    <div class="edu"><span><b>B.Tech, Artificial Intelligence &amp; Data Science</b> · Panimalar Institute of Technology</span><span class="label">2020 – 2024</span></div>
+  </section>
+
+  <footer>
+    <span>© 2026 Sathiya Varshini</span>
+    <button class="btn" type="button" id="copy">Copy email</button>
+  </footer>
+</div>
+
+<!-- ================= WORK EXPERIENCE POPUP ================= -->
+<dialog id="experience" aria-labelledby="exp-title">
+  <div class="d-head">
+    <div>
+      <div class="label">Sep 2024 – Present · AI Developer</div>
+      <h2 id="exp-title">HectaData</h2>
+      <div style="color:var(--muted);font-size:14.5px;margin-top:4px">AI legal intelligence platform for Malaysian case law: case management, similarity analysis, outcome prediction, quantum estimation and research assistance.</div>
+    </div>
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+  </div>
+  <div class="d-body">
+    <div>
+      <div class="sub">Document-to-intelligence pipeline</div>
+      <ol class="pipe">
+        <li><b>Intake</b><small>PDF · DOCX</small></li>
+        <li><b>OCR</b><small>Tesseract · PaddleOCR</small></li>
+        <li><b>Preprocess</b><small>deskew · denoise · binarize</small></li>
+        <li><b>Chunk</b><small>chunking strategies</small></li>
+        <li><b>Embed</b><small>English + Malay</small></li>
+        <li><b>Vector search</b><small>Qdrant · ANN</small></li>
+        <li><b>LLM extraction</b><small>Ollama · vLLM</small></li>
+        <li><b>Validate</b><small>Guardrails AI</small></li>
+        <li><b>Store</b><small>PostgreSQL · Redis</small></li>
+      </ol>
+      <div class="pipe-note">Designed end to end. Runs in resumable bulk batches with retries, structured logging and human-in-the-loop verification.</div>
+      <div class="layers">
+        <div><b>Orchestration</b><span>LangChain, LangGraph</span></div>
+        <div><b>Observability</b><span>LangSmith tracing, latency, tokens, eval regressions</span></div>
+        <div><b>Delivery</b><span>GitHub Actions CI/CD, Docker Compose</span></div>
+        <div><b>Scale</b><span>PostgreSQL read replicas, sharded + replicated Qdrant</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sub">Five AI modules delivered</div>
+      <div class="chips"><span class="chip">Chatbot</span><span class="chip">Estimate Quantum</span><span class="chip">Drafting</span><span class="chip">Assess Case Strength</span><span class="chip">Similarity Analysis</span></div>
+      <div class="pipe-note">Each with its own retrieval, prompting and validation strategy.</div>
+    </div>
+
+    <div>
+      <div class="sub">What I built</div>
+      <ul class="points">
+        <li><b>OCR &amp; preprocessing</b><span>OpenCV, PyMuPDF, Tesseract and PaddleOCR: deskewing, denoising and binarization for scanned PDFs and DOCX.</span></li>
+        <li><b>Bilingual metadata extraction</b><span>LLM classification of parties, citation, court, year and practice area, keeping original-language party names in English and Malay.</span></li>
+        <li><b>Multilingual RAG</b><span>Semantic search over Qdrant; evaluated embedding models for cross-language English/Malay retrieval and ANN similarity across judgments.</span></li>
+        <li><b>Safer extraction</b><span>Extraction and validation split into independent passes with Guardrails AI schema checks and custom injection-pattern validation.</span></li>
+        <li><b>Local inference</b><span>Ollama and vLLM for on-premise models, orchestrated with LangChain and LangGraph.</span></li>
+        <li><b>Backend services</b><span>FastAPI on PostgreSQL and Redis for staging, application and pipeline data.</span></li>
+        <li><b>CI/CD</b><span>Lint, tests and schema checks on every PR, then Docker image builds and deploys; consistent dev, staging and production via Docker Compose.</span></li>
+        <li><b>Evaluation</b><span>LangSmith eval datasets as regression checks before prompt or model releases; relevance, precision, recall and correctness metrics.</span></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="sub">Tech stack</div>
+      <dl class="stackgrid">
+        <dt>Backend</dt><dd class="chips"><span class="chip plain">Python</span><span class="chip plain">FastAPI</span><span class="chip plain">PostgreSQL</span><span class="chip plain">Redis</span></dd>
+        <dt>GenAI</dt><dd class="chips"><span class="chip plain">LangChain</span><span class="chip plain">LangGraph</span><span class="chip plain">Ollama</span><span class="chip plain">vLLM</span><span class="chip plain">Guardrails AI</span></dd>
+        <dt>Retrieval</dt><dd class="chips"><span class="chip plain">Qdrant</span><span class="chip plain">Embeddings</span><span class="chip plain">ANN search</span></dd>
+        <dt>Documents</dt><dd class="chips"><span class="chip plain">OpenCV</span><span class="chip plain">PyMuPDF</span><span class="chip plain">Tesseract</span><span class="chip plain">PaddleOCR</span></dd>
+        <dt>DevOps &amp; MLOps</dt><dd class="chips"><span class="chip plain">GitHub Actions</span><span class="chip plain">Docker</span><span class="chip plain">Docker Compose</span><span class="chip plain">LangSmith</span></dd>
+      </dl>
+    </div>
+
+    <div>
+      <div class="sub">Earlier · Internship</div>
+      <article class="post">
+        <div class="proj-head"><h3 style="font-size:18px">Combat Vehicles R&amp;D Establishment (CVRDE), DRDO</h3><span class="label">Ministry of Defence · Avadi, Chennai</span></div>
+        <p><b style="color:var(--ink)">Predictive Maintenance for BLDC Motors: AI-Driven Failure Detection.</b> Trained and tested CatBoost, ANN and Random Forest models to detect failures in brushless DC motors, under the guidance of a DRDO scientist.</p>
+        <div class="chips"><span class="chip plain">Python</span><span class="chip plain">CatBoost</span><span class="chip plain">ANN</span><span class="chip plain">Random Forest</span><span class="chip plain">Predictive maintenance</span></div>
+      </article>
+    </div>
+  </div>
+</dialog>
+
+<!-- ================= SELF PROJECTS POPUP ================= -->
+<dialog id="projects" aria-labelledby="proj-title">
+  <div class="d-head">
+    <div>
+      <div class="label">Built independently</div>
+      <h2 id="proj-title">Self Projects</h2>
+    </div>
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+  </div>
+  <div class="d-body">
+
+    <article class="proj">
+      <div class="proj-head"><h3>Multi-Agent AI Research &amp; Decision Engine</h3><span class="label">Mar – Jun 2026</span></div>
+      <dl class="ps">
+        <dt>Problem</dt><dd>A single LLM call gives confident answers to complex business questions with no evidence and no check on whether they are right.</dd>
+        <dt>Solution</dt><dd>Five specialised agents research, retrieve, analyse, verify and decide, producing evidence-based recommendations with human approval before anything is final.</dd>
+        <dt>Tech stack</dt><dd class="chips"><span class="chip">Python</span><span class="chip">LangGraph</span><span class="chip">LangChain</span><span class="chip">MCP</span><span class="chip">FastAPI</span><span class="chip">RAG</span><span class="chip">PostgreSQL</span><span class="chip">Redis</span><span class="chip">Pydantic</span></dd>
+      </dl>
+      <button class="btn more" type="button" aria-expanded="false" aria-controls="d1" id="m1">View details <span class="arr" aria-hidden="true">▾</span></button>
+      <div class="details" id="d1" hidden>
+        <div class="sub" style="margin:0">How it works</div>
+        <ol class="flow">
+          <li><b>Question in.</b> A FastAPI endpoint receives the question and starts a LangGraph run with persistent workflow state.</li>
+          <li><b>Research agent</b> breaks the question into sub-questions and decides what evidence is needed.</li>
+          <li><b>Retrieval agent</b> runs RAG over the knowledge base and calls MCP tools for controlled access to external services and business systems.</li>
+          <li><b>Data Analysis agent</b> works through the retrieved data to produce figures and comparisons.</li>
+          <li><b>Verification agent</b> checks each claim against its sources; conditional routing sends weak findings back to retrieval, and failed steps retry.</li>
+          <li><b>Decision agent</b> writes the recommendation as structured output validated by Pydantic.</li>
+          <li><b>Human approval</b> before the decision is finalised and returned with its evidence.</li>
+        </ol>
+      </div>
+    </article>
+
+    <article class="proj">
+      <div class="proj-head"><h3>AI-Powered Job Recommendation System</h3><span class="label">Jun – Aug 2025</span></div>
+      <dl class="ps">
+        <dt>Problem</dt><dd>Keyword matching misses good candidates whose profiles describe the same skills in different words, and gives no reason for a match.</dd>
+        <dt>Solution</dt><dd>Matches LinkedIn profiles to jobs by semantic similarity in a vector database, with five agents producing ranked, explainable recommendations.</dd>
+        <dt>Tech stack</dt><dd class="chips"><span class="chip">Python</span><span class="chip">LLMs</span><span class="chip">Embeddings</span><span class="chip">Vector search</span><span class="chip">RAG</span><span class="chip">LinkedIn profile data</span></dd>
+      </dl>
+      <button class="btn more" type="button" aria-expanded="false" aria-controls="d2" id="m2">View details <span class="arr" aria-hidden="true">▾</span></button>
+      <div class="details" id="d2" hidden>
+        <div class="sub" style="margin:0">How it works</div>
+        <ol class="flow">
+          <li><b>Profile Analysis agent</b> extracts skills, experience and projects from LinkedIn profile data.</li>
+          <li><b>Job Requirement agent</b> parses each posting into required skills, experience and preferences.</li>
+          <li><b>Embed and index</b> profiles and requirements in a vector database.</li>
+          <li><b>Matching agent</b> runs semantic similarity search instead of keyword overlap.</li>
+          <li><b>Evaluation agent</b> retrieves profile and job context with RAG and scores each fit.</li>
+          <li><b>Recommendation agent</b> returns a ranked list with a reason for every match.</li>
+        </ol>
+      </div>
+    </article>
+
+    <article class="proj">
+      <div class="proj-head"><h3>Smart Retail Store Management &amp; GenAI Assistant</h3><span class="label">Apr – Jun 2025</span></div>
+      <dl class="ps">
+        <dt>Problem</dt><dd>Store staff need fast answers about stock and sales, but letting an AI query the database risks exposing data a role should not see.</dd>
+        <dt>Solution</dt><dd>A role-based retail backend plus a RAG assistant that writes SQL from plain-English questions, gated by the caller's role permissions.</dd>
+        <dt>Tech stack</dt><dd class="chips"><span class="chip">Python</span><span class="chip">FastAPI</span><span class="chip">PostgreSQL</span><span class="chip">SQLAlchemy</span><span class="chip">Redis</span><span class="chip">JWT</span><span class="chip">RBAC</span><span class="chip">LangChain</span><span class="chip">Docker</span><span class="chip">GitHub Actions</span></dd>
+      </dl>
+      <button class="btn more" type="button" aria-expanded="false" aria-controls="d3" id="m3">View details <span class="arr" aria-hidden="true">▾</span></button>
+      <div class="details" id="d3" hidden>
+        <div class="sub" style="margin:0">How it works</div>
+        <ol class="flow">
+          <li><b>Sign in.</b> The user gets a JWT carrying their role: Admin, Manager or Employee.</li>
+          <li><b>Role-scoped API.</b> Every route checks the role across employees, catalog, inventory, stock and sales.</li>
+          <li><b>Data layer.</b> SQLAlchemy models on PostgreSQL, with Redis for caching.</li>
+          <li><b>Ask the assistant</b> a plain-English question, such as which products are low on stock.</li>
+          <li><b>RAG and SQL.</b> LangChain retrieves schema and store context; the LLM writes the query.</li>
+          <li><b>Permission gate.</b> The query is checked against the caller's role before it runs.</li>
+          <li><b>Ship.</b> GitHub Actions runs tests and builds the Docker image.</li>
+        </ol>
+      </div>
+    </article>
+
+    <article class="proj">
+      <div class="proj-head"><h3>Figma MCP Integration</h3><span class="label">Replication study</span></div>
+      <dl class="ps">
+        <dt>Problem</dt><dd>Learning MCP properly needs more than reading the spec: a working agent-to-app connection, built end to end.</dd>
+        <dt>Solution</dt><dd>Rebuilt an open-source Cursor-to-Figma MCP integration from scratch so an AI agent can read and modify Figma designs.</dd>
+        <dt>Tech stack</dt><dd class="chips"><span class="chip">TypeScript</span><span class="chip">MCP</span><span class="chip">WebSocket</span><span class="chip">Bun</span><span class="chip">Figma Plugin API</span></dd>
+      </dl>
+      <button class="btn more" type="button" aria-expanded="false" aria-controls="d4" id="m4">View details <span class="arr" aria-hidden="true">▾</span></button>
+      <div class="details" id="d4" hidden>
+        <div class="sub" style="margin:0">How it works</div>
+        <ol class="flow">
+          <li><b>Agent calls a tool</b> such as "read selection" or "create frame".</li>
+          <li><b>MCP server</b> in TypeScript on Bun turns the call into a command.</li>
+          <li><b>WebSocket relay</b> carries it on a named channel that pairs the agent with one Figma file.</li>
+          <li><b>Figma plugin</b> runs it through the Plugin API: document and selection reads, node creation, text and auto-layout updates, component instance overrides.</li>
+          <li><b>Result back</b> over the same channel to the agent as the tool response.</li>
+        </ol>
+      </div>
+    </article>
+
+    <article class="proj">
+      <div class="proj-head"><h3>Healthcare Insurance Claim Prediction</h3><span class="label">Data &amp; AI Day 2026 Hackathon</span></div>
+      <dl class="ps">
+        <dt>Problem</dt><dd>Predict claims from 476,000+ customer records where only 3.64% are positive, so a naive model just predicts "no claim".</dd>
+        <dt>Solution</dt><dd>Full modelling workflow with imbalance-aware features, cross-validation and an ensemble. Chennai Data Circle × Zerve AI.</dd>
+        <dt>Tech stack</dt><dd class="chips"><span class="chip">Python</span><span class="chip">Pandas</span><span class="chip">scikit-learn</span><span class="chip">XGBoost</span><span class="chip">LightGBM</span><span class="chip">CatBoost</span><span class="chip">Feature engineering</span></dd>
+        <dt>Result</dt><dd><span class="stat">1.81× over baseline</span><span class="stat">119,043 scored, 0 nulls</span></dd>
+      </dl>
+      <button class="btn more" type="button" aria-expanded="false" aria-controls="d5" id="m5">View details <span class="arr" aria-hidden="true">▾</span></button>
+      <div class="details" id="d5" hidden>
+        <div class="sub" style="margin:0">How it works</div>
+        <ol class="flow">
+          <li><b>EDA</b> on 476,000+ records and 50 anonymised features: confirmed the 3.64% positive rate, dropped 5 near-constant features, found a high-risk segment with a 5.55% claim rate, and treated features with 69% missing data as signals.</li>
+          <li><b>Missing-value indicators</b> so the model learns from where data is absent.</li>
+          <li><b>Target encoding</b> for high-cardinality categorical features.</li>
+          <li><b>Log transforms</b> for heavily skewed numeric features.</li>
+          <li><b>5-fold stratified cross-validation</b> on XGBoost, LightGBM and CatBoost, with scores consistent across every fold.</li>
+          <li><b>Ensemble prediction</b> on 119,043 unseen customers with zero nulls.</li>
+        </ol>
+        <div class="sub" style="margin:4px 0 0">PR-AUC by model</div>
+        <div class="models">
+          <div><b>0.0649</b><span>XGBoost</span></div>
+          <div><b>0.0653</b><span>LightGBM</span></div>
+          <div><b>0.0650</b><span>CatBoost</span></div>
+          <div class="best"><b>0.0660</b><span>Ensemble</span></div>
+        </div>
+        <p style="margin:0;color:var(--muted);font-size:13.5px">PR-AUC is the right metric at a 3.64% positive rate, where accuracy would look high for a model that never predicts a claim. Team project with Keerthe B and Bharath Madhesh S N, at IIT Madras Research Park.</p>
+      </div>
+    </article>
+
+  </div>
+</dialog>
+
+<!-- ================= LINKEDIN POSTS POPUP ================= -->
+<dialog id="posts" aria-labelledby="posts-title">
+  <div class="d-head">
+    <div>
+      <div class="label">From LinkedIn · 1,061 followers</div>
+      <h2 id="posts-title">LinkedIn Posts</h2>
+    </div>
+    <button class="close" type="button" data-close aria-label="Close">✕</button>
+  </div>
+  <div class="d-body">
+    <article class="post">
+      <div class="proj-head"><span class="post-tag">Hackathon · 2026</span><span class="label">2,062 impressions</span></div>
+      <h3 style="font-size:18px">Chennai Data Circle × Zerve: Data &amp; AI Day 2026</h3>
+      <p>Competed at the first Chennai Data Circle hackathon at IIT Madras Research Park on health insurance claim prediction, taking an imbalanced 476,000-record dataset to an ensemble that scored 1.81× over baseline in a single day. Also attended a hands-on LLM fine-tuning session on PEFT, QLoRA, adapters and low-rank decomposition, and a panel on AI in finance with leaders from PayPal, RRD and Zerve.</p>
+      <div class="chips"><span class="chip plain">XGBoost</span><span class="chip plain">LightGBM</span><span class="chip plain">CatBoost</span><span class="chip plain">PEFT</span><span class="chip plain">QLoRA</span></div>
+    </article>
+
+    <article class="post">
+      <div class="proj-head"><span class="post-tag">Internship · DRDO</span></div>
+      <h3 style="font-size:18px">Predictive Maintenance for BLDC Motors at CVRDE, DRDO</h3>
+      <p>Completed an internship at the Combat Vehicles Research &amp; Development Establishment, Ministry of Defence, Avadi. Built AI-driven failure detection for brushless DC motors, training and testing CatBoost, ANN and Random Forest models.</p>
+      <div class="chips"><span class="chip plain">CatBoost</span><span class="chip plain">ANN</span><span class="chip plain">Random Forest</span></div>
+    </article>
+
+    <article class="post">
+      <div class="proj-head"><span class="post-tag">Event · Microsoft</span><span class="label">1,533 impressions</span></div>
+      <h3 style="font-size:18px">Season of AI, Season 3: Best of AI @ Ignite</h3>
+      <p>Attended Microsoft's event in Chennai, organised by Tech Nexus. Wrote up how Microsoft Fabric unifies data warehouse and lakehouse in one workspace, handles ETL, and lets teams build AI agents quickly, including a demo agent that decided food-return requests against policy.</p>
+      <div class="chips"><span class="chip plain">Microsoft Fabric</span><span class="chip plain">AI agents</span><span class="chip plain">ETL</span></div>
+    </article>
+
+    <article class="post">
+      <div class="proj-head"><span class="post-tag">Event · Kipi.ai</span><span class="label">1,417 impressions</span></div>
+      <h3 style="font-size:18px">Kipi.ai Data Talks</h3>
+      <p>Attended sessions on GenAI and AI in data, covering Document AI, Trust Center and live Snowflake Cortex demonstrations of Snowflake's LLM models.</p>
+      <div class="chips"><span class="chip plain">Snowflake Cortex</span><span class="chip plain">Document AI</span><span class="chip plain">GenAI</span></div>
+    </article>
+
+    <article class="post">
+      <div class="proj-head"><span class="post-tag">Training</span></div>
+      <h3 style="font-size:18px">Deep Learning &amp; Applications (Parallel Architectures)</h3>
+      <p>Completed a two-week Faculty Development Programme run jointly by the Electronics and ICT Academies of IIT Guwahati, IIT Kanpur, IIT Roorkee, MNIT Jaipur, NIT Patna, NIT Warangal and PDPM IIITDM Jabalpur.</p>
+    </article>
+
+    <a class="btn" style="justify-self:start" href="https://www.linkedin.com/in/sathiya-varshini/recent-activity/all/" target="_blank" rel="noopener">See all posts on LinkedIn ↗</a>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  var html = document.documentElement;
+  function open(id){ var d=document.getElementById(id); if(!d||d.open) return;
+    document.querySelectorAll('dialog[open]').forEach(function(x){x.close();});
+    if(d.showModal) d.showModal(); else d.setAttribute('open','');
+    html.classList.add('locked'); d.querySelector('.d-body').scrollTop=0; }
+  document.querySelectorAll('[data-open]').forEach(function(b){ b.addEventListener('click',function(){ open(b.getAttribute('data-open')); }); });
+  document.querySelectorAll('dialog').forEach(function(d){
+    d.addEventListener('close',function(){ html.classList.remove('locked'); var t=document.getElementById('open-'+d.id); if(t) t.focus(); });
+    d.addEventListener('click',function(e){ if(e.target===d) d.close(); });
+    d.querySelectorAll('[data-close]').forEach(function(c){ c.addEventListener('click',function(){ d.close(); }); });
+  });
+  document.querySelectorAll('.more').forEach(function(b){
+    b.addEventListener('click',function(){
+      var p=document.getElementById(b.getAttribute('aria-controls')), on=b.getAttribute('aria-expanded')!=='true';
+      b.setAttribute('aria-expanded',String(on)); p.hidden=!on;
+      b.firstChild.nodeValue = on ? 'Hide details ' : 'View details ';
+    });
+  });
+  var h=(location.hash||'').slice(1); if(h==='experience'||h==='projects'||h==='posts') open(h);
+  document.getElementById('copy').addEventListener('click',function(){
+    var b=this, t='sathiyavarshiniofficial@gmail.com';
+    try{ navigator.clipboard.writeText(t).then(function(){b.textContent='Copied';},function(){b.textContent=t;}); }catch(e){ b.textContent=t; }
+  });
+})();
+</script>
+</body>
+</html>
